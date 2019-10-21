@@ -1,6 +1,6 @@
 # Vue date range picker
 
-It's a fork of picker vue2-daterange-picker (https://github.com/Innologica/vue2-daterange-picker) with moment.js dependency has been replace with lightweight dayjs.js. Also picker behavior and apperance has been modified a bit.
+It's a fork of vue2-daterange-picker (https://github.com/Innologica/vue2-daterange-picker) with moment.js dependency replaced with lightweight dayjs.js. Also picker behavior and apperance has been modified a bit.
 
 
 ## Installation
