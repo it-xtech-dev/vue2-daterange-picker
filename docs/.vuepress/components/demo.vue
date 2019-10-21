@@ -12,6 +12,7 @@
                         :singleDatePicker="singleDatePicker"
                         :timePicker="timePicker"
                         :timePicker24Hour="timePicker24Hour"
+                        :time-picker-increment="1"
                         :showWeekNumbers="showWeekNumbers"
                         :showDropdowns="showDropdowns"
                         :autoApply="autoApply"
@@ -21,9 +22,13 @@
                         @toggle="checkOpen"
                         :linkedCalendars="linkedCalendars"
                         :dateFormat="dateFormat"
+                        :time-picker-seconds="true"
                 >
-                    <div slot="input" slot-scope="picker" style="min-width: 350px;">
-                        {{ picker.startDate | date }} - {{ picker.endDate | date }}
+                    <div slot="input" slot-scope="picker">
+                        <button class="btn btn-primary">
+                            K
+                        </button>
+                        <!-- {{ picker.startDate | date }} - {{ picker.endDate | date }} -->
                     </div>
                 </date-range-picker>
 
@@ -180,7 +185,7 @@
 
 <script>
   import DateRangePicker from '../../../src/components/DateRangePicker'
-  import moment from 'moment'
+  import moment from 'dayjs'
 
   export default {
     components: {DateRangePicker},
@@ -198,13 +203,13 @@
       //                    :locale-data="{ daysOfWeek: [ 'Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб' ] }"
       return {
         opens: 'center',
-        minDate: '2017-08-02',
-        maxDate: '2017-11-02',
-        // minDate: '',
-        // maxDate: '',
+        //minDate: '2017-08-02',
+        //maxDate: '2017-11-02',
+        minDate: '',
+        maxDate: '',
         dateRange: {
           startDate: '2017-09-10',
-          endDate: '2017-9-20',
+          endDate: '2017-09-20',
         },
         show_ranges: true,
         singleDatePicker: false,

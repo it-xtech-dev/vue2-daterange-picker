@@ -1,6 +1,6 @@
 <template>
     <div class="vue-daterange-picker">
-        <div class="form-control reportrange-text" @click="togglePicker(null, true)">
+        <div @click="togglePicker(null, true)">
             <!--
               Allows you to change the input which is visible before the picker opens
 
@@ -55,7 +55,7 @@
                             <i class="fa fa-calendar glyphicon glyphicon-calendar"></i>
                         </div>
                         <div class="calendar-table">
-                            <calendar :monthDate="monthDate"
+                            <calendar :monthDisplayed="primaryPickerDateDisplayed"
                                       :locale-data="locale"
                                       :start="start" :end="end"
                                       :minDate="min" :maxDate="max"
@@ -66,6 +66,7 @@
 
                                       @dateClick="dateClick" @hoverDate="hoverDate"
                                       :showWeekNumbers="showWeekNumbers"
+                                      context="primary"
                             ></calendar>
                         </div>
                         <calendar-time v-if="timePicker"
@@ -84,7 +85,7 @@
                             <i class="fa fa-calendar glyphicon glyphicon-calendar"></i>
                         </div>
                         <div class="calendar-table">
-                            <calendar :monthDate="nextMonthDate"
+                            <calendar :monthDisplayed="seconaryPickerDateDisplayed"
                                       :locale-data="locale"
                                       :start="start" :end="end"
                                       :minDate="min" :maxDate="max"
@@ -95,6 +96,8 @@
 
                                       @dateClick="dateClick" @hoverDate="hoverDate"
                                       :showWeekNumbers="showWeekNumbers"
+
+                                      context="secondary"
                             ></calendar>
                         </div>
                         <calendar-time v-if="timePicker"
@@ -130,12 +133,15 @@
 </template>
 
 <script>
-  import moment from 'moment'
+  import dayjs from 'dayjs'
+  import 'dayjs/locale/en-gb'
   import Calendar from './Calendar.vue'
   import CalendarTime from './CalendarTime'
   import CalendarRanges from './CalendarRanges'
   import {localeData, nextMonth, prevMonth, validateDateRange, yearMonth} from './util'
   import {mixin as clickaway} from 'vue-clickaway'
+
+  dayjs.locale('en-gb')
 
   export default {
     inheritAttrs: false,
@@ -255,12 +261,12 @@
         type: [Object, Boolean],
         default () {
           return {
-            'Today': [moment(), moment()],
-            'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-            'This month': [moment().startOf('month'), moment().endOf('month')],
-            'This year': [moment().startOf('year'), moment().endOf('year')],
-            'Last week': [moment().subtract(1, 'week').startOf('week'), moment().subtract(1, 'week').endOf('week')],
-            'Last month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            'Today': [dayjs(), dayjs()],
+            'Yesterday': [dayjs().subtract(1, 'days'), dayjs().subtract(1, 'days')],
+            'This month': [dayjs().startOf('month'), dayjs().endOf('month')],
+            'This year': [dayjs().startOf('year'), dayjs().endOf('year')],
+            'Last week': [dayjs().subtract(1, 'week').startOf('week'), dayjs().subtract(1, 'week').endOf('week')],
+            'Last month': [dayjs().subtract(1, 'month').startOf('month'), dayjs().subtract(1, 'month').endOf('month')],
           }
         }
       },
@@ -292,8 +298,8 @@
       let startDate = this.dateRange.startDate || null;
       let endDate = this.dateRange.endDate || null;
 
-      data.monthDate = startDate ? new Date(startDate) : new Date()
-      data.nextMonthDate = nextMonth(data.monthDate)
+      data.primaryPickerDateDisplayed = startDate ? new Date(startDate) : new Date()
+      data.seconaryPickerDateDisplayed = nextMonth(data.primaryPickerDateDisplayed)
       data.start = startDate ? new Date(startDate) : null
       if (this.singleDatePicker) {
         // ignore endDate for singleDatePicker
@@ -329,21 +335,21 @@
       },
       changeLeftMonth (value) {
         let newDate = new Date(value.year, value.month, 1);
-        this.monthDate = newDate
-        if (this.linkedCalendars || (yearMonth(this.monthDate) >= yearMonth(this.nextMonthDate))) {
-          this.nextMonthDate = validateDateRange(nextMonth(newDate), this.minDate, this.maxDate);
-          if (yearMonth(this.monthDate) === yearMonth(this.nextMonthDate)) {
-            this.monthDate = validateDateRange(prevMonth(this.monthDate), this.minDate, this.maxDate)
+        this.primaryPickerDateDisplayed = newDate
+        if (this.linkedCalendars || (yearMonth(this.primaryPickerDateDisplayed) >= yearMonth(this.seconaryPickerDateDisplayed))) {
+          this.seconaryPickerDateDisplayed = validateDateRange(nextMonth(newDate), this.minDate, this.maxDate);
+          if (yearMonth(this.primaryPickerDateDisplayed) === yearMonth(this.seconaryPickerDateDisplayed)) {
+            this.primaryPickerDateDisplayed = validateDateRange(prevMonth(this.primaryPickerDateDisplayed), this.minDate, this.maxDate)
           }
         }
       },
       changeRightMonth (value) {
         let newDate = new Date(value.year, value.month, 1);
-        this.nextMonthDate = newDate
-        if (this.linkedCalendars || (yearMonth(this.nextMonthDate) <= yearMonth(this.monthDate))) {
-          this.monthDate = validateDateRange(prevMonth(newDate), this.minDate, this.maxDate);
-          if (yearMonth(this.monthDate) === yearMonth(this.nextMonthDate)) {
-            this.nextMonthDate = validateDateRange(nextMonth(this.nextMonthDate), this.minDate, this.maxDate)
+        this.seconaryPickerDateDisplayed = newDate
+        if (this.linkedCalendars || (yearMonth(this.seconaryPickerDateDisplayed) <= yearMonth(this.primaryPickerDateDisplayed))) {
+          this.primaryPickerDateDisplayed = validateDateRange(prevMonth(newDate), this.minDate, this.maxDate);
+          if (yearMonth(this.primaryPickerDateDisplayed) === yearMonth(this.seconaryPickerDateDisplayed)) {
+            this.seconaryPickerDateDisplayed = validateDateRange(nextMonth(this.seconaryPickerDateDisplayed), this.minDate, this.maxDate)
           }
         }
       },
@@ -358,29 +364,38 @@
 
         return newDate;
       },
-      dateClick (value) {
-        if (this.in_selection) {
-          this.in_selection = false
-          this.end = this.normalizeDatetime(value, this.end);
+      dateClick (value, context) {
+        if (context === 'primary') {
+          console.log('primary dateClicked');
+          if (this.in_selection) {
+            this.in_selection = false
+            this.end = this.normalizeDatetime(value, this.end);
 
-          if (this.end < this.start) {
-            this.in_selection = true
+            if (this.end < this.start) {
+              this.in_selection = true
+              this.start = this.normalizeDatetime(value, this.start);
+            }
+            if (!this.in_selection && this.autoApply) {
+              this.clickedApply();
+            }
+          } else {
             this.start = this.normalizeDatetime(value, this.start);
-          }
-          if (!this.in_selection && this.autoApply) {
-            this.clickedApply();
-          }
-        } else {
-          this.start = this.normalizeDatetime(value, this.start);
+            this.end = this.normalizeDatetime(value, this.end);
+            if (!this.singleDatePicker) {
+              this.in_selection = true
+            } else if (this.autoApply) {
+              this.clickedApply();
+            }
+          }          
+        } else if (context === 'secondary') {
+          console.log('secondary dateClicked');
           this.end = this.normalizeDatetime(value, this.end);
-          if (!this.singleDatePicker) {
-            this.in_selection = true
-          } else if (this.autoApply) {
-            this.clickedApply();
-          }
+          this.in_selection = false;
+        } else {
+          throw "Unknown context '" + context + "'";
         }
       },
-      hoverDate (value) {
+      hoverDate (value, context) {
         let dt = this.normalizeDatetime(value, this.end);
         if (this.in_selection && dt >= this.start)
           this.end = dt
@@ -390,6 +405,10 @@
           this.open = value
         } else {
           this.open = !this.open
+        }
+        if (this.open) {
+          this.primaryPickerDateDisplayed = this.start || this.minDate || new Date();
+          this.seconaryPickerDateDisplayed = this.end || this.maxDate || new Date();
         }
 
         if (event === true)
@@ -424,7 +443,7 @@
       clickRange (value) {
         this.start = new Date(value[0])
         this.end = new Date(value[1])
-        this.monthDate = new Date(value[0])
+        this.primaryPickerDateDisplayed = new Date(value[0])
         if (this.autoApply)
           this.clickedApply()
       },
@@ -450,13 +469,13 @@
         // return this.start.toLocaleDateString()+
         if (this.start === null)
           return ''
-        return moment(this.start).format(this.locale.format)
+        return dayjs(this.start).format(this.locale.format)
       },
       endText () {
         if (this.end === null)
           return ''
         // return new Date(this.end).toLocaleDateString()
-        return moment(new Date(this.end)).format(this.locale.format)
+        return dayjs(new Date(this.end)).format(this.locale.format)
       },
       rangeText () {
         let range = this.startText;
@@ -489,11 +508,11 @@
     },
     watch: {
       minDate () {
-        let dt = validateDateRange(this.monthDate, this.minDate || new Date(), this.maxDate)
+        let dt = validateDateRange(this.primaryPickerDateDisplayed, this.minDate || new Date(), this.maxDate)
         this.changeLeftMonth({year: dt.getFullYear(), month: dt.getMonth()})
       },
       maxDate () {
-        let dt = validateDateRange(this.nextMonthDate, this.minDate, this.maxDate || new Date())
+        let dt = validateDateRange(this.seconaryPickerDateDisplayed, this.minDate, this.maxDate || new Date())
         this.changeRightMonth({year: dt.getFullYear(), month: dt.getMonth()})
       },
       'dateRange.startDate' (value) {

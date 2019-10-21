@@ -34,8 +34,8 @@
             <slot name="date-slot" v-for="(date, idx) in dateRow">
                 <td
                         :class="dayClass(date)"
-                        @click="$emit('dateClick', date)"
-                        @mouseover="$emit('hoverDate', date)"
+                        @click="$emit('dateClick', date, context)"
+                        @mouseover="$emit('hoverDate', date, context)"
                         :key="idx"
                 >
                     {{date | dateNum}}
@@ -47,13 +47,18 @@
 </template>
 
 <script>
-  import moment from 'moment'
+  import dayjs from 'dayjs'
+  import WeekOfYear from 'dayjs/plugin/weekOfYear'
+  import WeekDay from 'dayjs/plugin/weekday'
   import {localeData, nextMonth, prevMonth, validateDateRange, yearMonth} from "./util";
+
+  dayjs.extend(WeekOfYear);
+  dayjs.extend(WeekDay);
 
   export default {
     name: 'calendar',
     props: {
-      monthDate: Date,
+      monthDisplayed: Date,
       localeData: Object,
       start: Date,
       end: Date,
@@ -70,27 +75,28 @@
       dateFormat: {
         type: Function,
         default: null
-      }
+      },
+      context: String
     },
     data () {
       return {
-        currentMonthDate: this.monthDate || this.start || new Date(),
+        currentMonthDisplayed: this.monthDisplayed || this.start || new Date(),
       }
     },
     methods: {
       prevMonth() {
-        this.changeMonthDate(prevMonth(this.currentMonthDate))
+        this.changeMonthDisplayed(prevMonth(this.currentMonthDisplayed))
       },
       nextMonth() {
-        this.changeMonthDate(nextMonth(this.currentMonthDate))
+        this.changeMonthDisplayed(nextMonth(this.currentMonthDisplayed))
       },
-      changeMonthDate (date, emit = true) {
-        let year_month = yearMonth(this.currentMonthDate)
-        this.currentMonthDate = validateDateRange(date, this.minDate, this.maxDate)
-        if(emit && year_month !== yearMonth(this.currentMonthDate)) {
+      changeMonthDisplayed (date, emit = true) {
+        let year_month = yearMonth(this.currentMonthDisplayed)
+        this.currentMonthDisplayed = validateDateRange(date, this.minDate, this.maxDate)
+        if(emit && year_month !== yearMonth(this.currentMonthDisplayed)) {
           this.$emit('change-month', {
-            month: this.currentMonthDate.getMonth(),
-            year: this.currentMonthDate.getFullYear(),
+            month: this.currentMonthDisplayed.getMonth(),
+            year: this.currentMonthDisplayed.getFullYear(),
           })
         }
       },
@@ -104,14 +110,14 @@
 
         let classes = {
           off: date.month() !== this.month,
-          weekend: date.isoWeekday() > 5,
+          weekend: date.weekday() > 5,
           today: dt.setHours(0, 0, 0, 0) == new Date().setHours(0, 0, 0, 0),
           active: dt.setHours(0, 0, 0, 0) == new Date(this.start).setHours(0, 0, 0, 0) || dt.setHours(0, 0, 0, 0) == new Date(this.end).setHours(0, 0, 0, 0),
           // 'in-range': dt >= start && dt <= end,
           'start-date': dt.getTime() === start.getTime(),
           'end-date': dt.getTime() === end.getTime(),
-          disabled: (this.minDate && moment(dt).startOf("day").isBefore(moment(this.minDate).startOf("day")))
-            || (this.maxDate && moment(dt).startOf("day").isAfter(moment(this.maxDate).startOf("day"))),
+          disabled: (this.minDate && dayjs(dt).startOf("day").isBefore(dayjs(this.minDate).startOf("day")))
+            || (this.maxDate && dayjs(dt).startOf("day").isAfter(dayjs(this.maxDate).startOf("day"))),
         }
         return this.dateFormat ? this.dateFormat(classes, date) : classes
 
@@ -119,11 +125,11 @@
     },
     computed: {
       monthName () {
-        return this.locale.monthNames[this.currentMonthDate.getMonth()]
+        return this.locale.monthNames[this.currentMonthDisplayed.getMonth()]
       },
       year: {
         get () {
-          return this.currentMonthDate.getFullYear()
+          return this.currentMonthDisplayed.getFullYear()
         },
         set (value) {
           let newDate = validateDateRange(new Date(value, this.month, 1), this.minDate, this.maxDate)
@@ -136,7 +142,7 @@
       },
       month: {
         get () {
-          return this.currentMonthDate.getMonth()
+          return this.currentMonthDisplayed.getMonth()
         },
         set (value) {
           let newDate = validateDateRange(new Date(this.year, value, 1), this.minDate, this.maxDate)
@@ -148,14 +154,16 @@
         }
       },
       calendar () {
+        console.log(this.currentMonthDisplayed)
+
         let month = this.month
-        let year = this.currentMonthDate.getFullYear()
+        let year = this.currentMonthDisplayed.getFullYear()
         let daysInMonth = new Date(year, month, 0).getDate()
         let firstDay = new Date(year, month, 1)
         let lastDay = new Date(year, month, daysInMonth)
-        let lastMonth = moment(firstDay).subtract(1, 'month').month()
-        let lastYear = moment(firstDay).subtract(1, 'month').year()
-        let daysInLastMonth = moment([lastYear, lastMonth]).daysInMonth()
+        let lastMonth = dayjs(firstDay).subtract(1, 'month').month()
+        let lastYear = dayjs(firstDay).subtract(1, 'month').year()
+        let daysInLastMonth = dayjs(new Date(lastYear, lastMonth)).daysInMonth()
 
         let dayOfWeek = firstDay.getDay()
 
@@ -172,8 +180,8 @@
         if (dayOfWeek === this.locale.firstDay)
           startDay = daysInLastMonth - 6;
 
-        let curDate = moment([lastYear, lastMonth, startDay, 12, 0, 0]);
-        for (let i = 0, col = 0, row = 0; i < 6 * 7; i++, col++, curDate = moment(curDate).add(1, 'day')) {
+        let curDate = dayjs(new Date(lastYear, lastMonth, startDay, 12, 0, 0));
+        for (let i = 0, col = 0, row = 0; i < 6 * 7; i++, col++, curDate = dayjs(curDate).add(1, 'day')) {
           if (i > 0 && col % 7 === 0) {
             col = 0;
             row++;
@@ -217,8 +225,8 @@
       locale () { return localeData(this.localeData) }
     },
     watch: {
-      monthDate (value) {
-        this.changeMonthDate(value, false)
+      monthDisplayed (value) {
+        this.changeMonthDisplayed(value, false)
       }
     },
     filters: {

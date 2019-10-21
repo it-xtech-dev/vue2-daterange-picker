@@ -1,5 +1,7 @@
 # Vue date range picker
 
+It's a fork of picker vue2-daterange-picker (https://github.com/Innologica/vue2-daterange-picker) with moment.js dependency has been replace with lightweight dayjs.js. Also picker behavior and apperance has been modified a bit.
+
 > Vue2 date range picker based on https://github.com/dangrossman/bootstrap-daterangepicker (no jQuery)
 
 Date range picker component for vue made without jQuery dependency. Heavily inspired by bootstrap-daterangepicker. 
@@ -7,21 +9,7 @@ Date range picker component for vue made without jQuery dependency. Heavily insp
 
 ## Installation
 
-```sh
-npm i vue2-daterange-picker --save
-```
-
-or 
-
-```sh
-yarn add vue2-daterange-picker
-```
-
-import to use:
-
-```JS
-import DateRangePicker from 'vue2-daterange-picker'
-```
+No npm package avaiable yet. You can pull git project and create local package for your project usage or use one of the output .js files to include.
 
 ## Usage
 
