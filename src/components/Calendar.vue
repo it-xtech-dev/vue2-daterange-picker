@@ -154,13 +154,9 @@
         }
       },
       calendar () {
-        console.log(this.currentMonthDisplayed)
-
         let month = this.month
         let year = this.currentMonthDisplayed.getFullYear()
-        let daysInMonth = new Date(year, month, 0).getDate()
         let firstDay = new Date(year, month, 1)
-        let lastDay = new Date(year, month, daysInMonth)
         let lastMonth = dayjs(firstDay).subtract(1, 'month').month()
         let lastYear = dayjs(firstDay).subtract(1, 'month').year()
         let daysInLastMonth = dayjs(new Date(lastYear, lastMonth)).daysInMonth()

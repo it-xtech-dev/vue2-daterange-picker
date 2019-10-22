@@ -38,8 +38,58 @@
             </div>
         </div>
 
+        <div class="py-1">
+            <div class="form-group">
+                <label>Select range: </label>
+                <date-range-picker
+                        ref="picker"
+                        :opens="opens"
+                        :locale-data="{ firstDay: 1, format: 'DD-MM-YYYY HH:mm:ss' }"
+                        :minDate="minDate" :maxDate="maxDate"
+                        :singleDatePicker="true"
+                        :timePicker="timePicker"
+                        :timePicker24Hour="timePicker24Hour"
+                        :time-picker-increment="1"
+                        :showWeekNumbers="showWeekNumbers"
+                        :showDropdowns="showDropdowns"
+                        :autoApply="autoApply"
+                        v-model="singleDate"
+                        :ranges="show_ranges ? undefined : false"
+                        @update="updateValues"
+                        @toggle="checkOpen"
+                        :linkedCalendars="linkedCalendars"
+                        :dateFormat="dateFormat"
+                        :time-picker-seconds="true"
+                >
+                    <div slot="input" slot-scope="picker">
+                        <button class="btn btn-primary">
+                            K
+                        </button>
+                        <!-- {{ picker.startDate | date }} - {{ picker.endDate | date }} -->
+                    </div>
+                </date-range-picker>
+
+                <button class="btn btn-info" @click="singleDate = null">
+                    Clear
+                </button>
+            </div>
+        </div> 
+
+        <div class="py-1">
+            <div class="form-group">
+                <label>Select range: </label>
+                    <date-input v-model="inputDate"></date-input>                
+            </div>
+        </div>               
+
         <div class="form-row pt-3 bg-light">
             <div class="col-md-6">
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label" for="startDate">Single date</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="startDate" v-model="singleDate">
+                    </div>
+                </div>                
                 <div class="form-group row">
                     <label class="col-sm-4 col-form-label" for="startDate">StartDate</label>
                     <div class="col-sm-8">
@@ -185,10 +235,14 @@
 
 <script>
   import DateRangePicker from '../../../src/components/DateRangePicker'
+  import { DateInput } from '../../../src/components/DateRangePicker'
   import moment from 'dayjs'
 
   export default {
-    components: {DateRangePicker},
+    components: {
+        DateRangePicker,
+        DateInput
+    },
     name: 'DateRangePickerDemo',
     filters: {
       date (value) {
@@ -202,11 +256,13 @@
     data () {
       //                    :locale-data="{ daysOfWeek: [ 'Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб' ] }"
       return {
+        inputDate: new Date(),
         opens: 'center',
         //minDate: '2017-08-02',
         //maxDate: '2017-11-02',
         minDate: '',
         maxDate: '',
+        singleDate: '2018-01-01',
         dateRange: {
           startDate: '2017-09-10',
           endDate: '2017-09-20',
@@ -226,8 +282,8 @@
     },
     methods: {
       updateValues (values) {
-        this.dateRange.startDate = moment(values.startDate).format('YYYY-MM-DD');
-        this.dateRange.endDate = moment(values.endDate).format('YYYY-MM-DD');
+        //this.dateRange.startDate = moment(values.startDate).format('YYYY-MM-DD');
+        //this.dateRange.endDate = moment(values.endDate).format('YYYY-MM-DD');
 
         console.log('event: update', values)
       },
@@ -261,6 +317,9 @@
         &::before {
             content: ' - ';
         }
+    }
+    .valid-error {
+        color: red;
     }
 </style>
 

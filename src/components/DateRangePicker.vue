@@ -138,9 +138,11 @@
   import Calendar from './Calendar.vue'
   import CalendarTime from './CalendarTime'
   import CalendarRanges from './CalendarRanges'
+  import DateInputImport from './DateInput'
   import {localeData, nextMonth, prevMonth, validateDateRange, yearMonth} from './util'
   import {mixin as clickaway} from 'vue-clickaway'
 
+  // initialize default locale
   dayjs.locale('en-gb')
 
   export default {
@@ -148,7 +150,7 @@
     components: {Calendar, CalendarTime, CalendarRanges},
     mixins: [clickaway],
     model: {
-      prop: 'dateRange',
+      prop: 'dateBind',
       event: 'update',
     },
     props: {
@@ -249,7 +251,7 @@
       /**
        * This is the v-model prop which the component uses.
        */
-      dateRange: { // for v-model
+      dateBind: { // for v-model
         default: null,
         required: true
       },
@@ -295,8 +297,8 @@
     data () {
       let data = {locale: localeData(this.localeData)}
 
-      let startDate = this.dateRange.startDate || null;
-      let endDate = this.dateRange.endDate || null;
+      let startDate = null; //this.dateRange.startDate || null;
+      let endDate = null; //this.dateRange.endDate || null;
 
       data.primaryPickerDateDisplayed = startDate ? new Date(startDate) : new Date()
       data.seconaryPickerDateDisplayed = nextMonth(data.primaryPickerDateDisplayed)
@@ -366,7 +368,6 @@
       },
       dateClick (value, context) {
         if (context === 'primary') {
-          console.log('primary dateClicked');
           if (this.in_selection) {
             this.in_selection = false
             this.end = this.normalizeDatetime(value, this.end);
@@ -388,14 +389,13 @@
             }
           }          
         } else if (context === 'secondary') {
-          console.log('secondary dateClicked');
           this.end = this.normalizeDatetime(value, this.end);
           this.in_selection = false;
         } else {
           throw "Unknown context '" + context + "'";
         }
       },
-      hoverDate (value, context) {
+      hoverDate (value, /*context*/) {
         let dt = this.normalizeDatetime(value, this.end);
         if (this.in_selection && dt >= this.start)
           this.end = dt
@@ -427,7 +427,14 @@
          * Emits when the user selects a range from the picker and clicks "apply" (if autoApply is true).
          * @param {json} value - json object containing the dates: {startDate, endDate}
          */
-        this.$emit('update', {startDate: this.start, endDate: this.end})
+        if (this.singleDatePicker) {
+          this.$emit('update', this.start )
+        }
+        else
+        {
+          this.$emit('update', {startDate: this.start, endDate: this.end})
+        }
+        
       },
       clickAway () {
         if (this.open) {
@@ -465,6 +472,19 @@
       },
     },
     computed: {
+      dateRange() {
+        if (this.dateBind.hasOwnProperty('startDate')
+            && this.dateBind.hasOwnProperty('endDate')
+            ) 
+        {
+          return this.dateBind;
+        } else {
+          return {
+            startDate: this.dateBind,
+            endDate: null
+          }
+        }
+      },
       startText () {
         // return this.start.toLocaleDateString()+
         if (this.start === null)
@@ -515,7 +535,7 @@
         let dt = validateDateRange(this.seconaryPickerDateDisplayed, this.minDate, this.maxDate || new Date())
         this.changeRightMonth({year: dt.getFullYear(), month: dt.getMonth()})
       },
-      'dateRange.startDate' (value) {
+      'dateBind.startDate' (value) {
         this.start = (!!value && !this.isClear) ? new Date(value) : null
         if (this.isClear) {
           this.start = null
@@ -525,7 +545,7 @@
           this.end = new Date(this.dateRange.endDate)
         }
       },
-      'dateRange.endDate' (value) {
+      'dateBind.endDate' (value) {
         this.end = (!!value && !this.isClear) ? new Date(value) : null
         if (this.isClear) {
           this.start = null
@@ -537,6 +557,9 @@
       }
     }
   }
+
+  //expose dateinput component
+  export const DateInput = DateInputImport;
 
 </script>
 
@@ -680,5 +703,4 @@
         position: relative;
         display: inline-block;
     }
-
 </style>

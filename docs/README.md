@@ -10,3 +10,7 @@ No npm package avaiable yet. You can clone git project and create local package 
 ## Usage
 
 check: https://github.com/Innologica/vue2-daterange-picker
+
+## Example
+
+<demo></demo>

@@ -9,4 +9,18 @@ No npm package avaiable yet. You can clone git project and create local package 
 
 ## Usage
 
-check: https://github.com/Innologica/vue2-daterange-picker
+orignal component (behavior may be different): https://github.com/Innologica/vue2-daterange-picker
+
+<demo></demo>
+
+### New component DateInput
+
+Date input component allows you to enter date from keybord to input with custom format and binding to datetime object.
+
+## Development
+
+Use: $ npm run docs:dev
+For live development
+
+Use: $ npm run lib:build
+For dist output
