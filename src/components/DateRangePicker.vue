@@ -147,7 +147,7 @@
 
   export default {
     inheritAttrs: false,
-    components: {Calendar, CalendarTime, CalendarRanges},
+    components: {Calendar, CalendarTime, CalendarRanges, DateInput: DateInputImport },
     mixins: [clickaway],
     model: {
       prop: 'dateBind',
@@ -252,8 +252,30 @@
        * This is the v-model prop which the component uses.
        */
       dateBind: { // for v-model
+        type: [Date, Object],
         default: null,
-        required: true
+        required: true,
+        validator(value) {
+          // https://stackoverflow.com/questions/643782/how-to-check-whether-an-object-is-a-date
+          if (isValidInput(value)) {
+            return true;
+          } else if  (
+              value.hasOwnProperty('startDate') 
+              && value.hasOwnProperty('endDate')
+              && isValidInput(value.startDate)
+              && isValidInput(value.endDate)
+              ) {
+                return true
+          } else {
+            console.warn("v-model should be Date or { startDate: Date, endDate: Date } specified value does not meet this conditions.")
+            return false;
+          }
+
+          function isValidInput(check) {
+            return typeof check.getMonth === 'function' 
+                || check === null
+          }
+        }        
       },
       /**
        * You can set this to false in order to hide the ranges selection. Otherwise it is an object with key/value. See below
@@ -295,19 +317,23 @@
       }
     },
     data () {
-      let data = {locale: localeData(this.localeData)}
+      let data = {
+        locale: localeData(this.localeData)
+      }
 
-      let startDate = null; //this.dateRange.startDate || null;
-      let endDate = null; //this.dateRange.endDate || null;
+      var initialDates = this.getBindedDates();
 
-      data.primaryPickerDateDisplayed = startDate ? new Date(startDate) : new Date()
-      data.seconaryPickerDateDisplayed = nextMonth(data.primaryPickerDateDisplayed)
-      data.start = startDate ? new Date(startDate) : null
+      let startDate = initialDates.startDate || new Date();
+      let endDate = initialDates.endDate || startDate;
+
+      data.primaryPickerDateDisplayed =  initialDates.startDate;
+      data.seconaryPickerDateDisplayed = initialDates.endDate;
+      data.start = startDate;
       if (this.singleDatePicker) {
         // ignore endDate for singleDatePicker
         data.end = data.start
       } else {
-        data.end = endDate ? new Date(endDate) : null
+        data.end = endDate;
       }
       data.in_selection = false
       data.open = false
@@ -470,9 +496,7 @@
 
         this.end = end;
       },
-    },
-    computed: {
-      dateRange() {
+      getBindedDates() {
         if (this.dateBind.hasOwnProperty('startDate')
             && this.dateBind.hasOwnProperty('endDate')
             ) 
@@ -483,7 +507,12 @@
             startDate: this.dateBind,
             endDate: null
           }
-        }
+        }        
+      }
+    },
+    computed: {
+      dateRange() {
+        return this.getBindedDates();
       },
       startText () {
         // return this.start.toLocaleDateString()+
@@ -534,8 +563,8 @@
       maxDate () {
         let dt = validateDateRange(this.seconaryPickerDateDisplayed, this.minDate, this.maxDate || new Date())
         this.changeRightMonth({year: dt.getFullYear(), month: dt.getMonth()})
-      },
-      'dateBind.startDate' (value) {
+      },  
+      'dateRange.startDate' (value) {
         this.start = (!!value && !this.isClear) ? new Date(value) : null
         if (this.isClear) {
           this.start = null
@@ -545,7 +574,7 @@
           this.end = new Date(this.dateRange.endDate)
         }
       },
-      'dateBind.endDate' (value) {
+      'dateRange.endDate' (value) {
         this.end = (!!value && !this.isClear) ? new Date(value) : null
         if (this.isClear) {
           this.start = null

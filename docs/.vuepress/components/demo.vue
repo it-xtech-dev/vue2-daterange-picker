@@ -78,7 +78,7 @@
         <div class="py-1">
             <div class="form-group">
                 <label>Select range: </label>
-                    <date-input v-model="inputDate"></date-input>                
+                    <date-input v-model="singleDate"></date-input>                
             </div>
         </div>               
 
@@ -87,19 +87,19 @@
                 <div class="form-group row">
                     <label class="col-sm-4 col-form-label" for="startDate">Single date</label>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="startDate" v-model="singleDate">
+                        <date-input type="text" class="form-control" id="startDate" v-model="singleDate"></date-input>
                     </div>
                 </div>                
                 <div class="form-group row">
                     <label class="col-sm-4 col-form-label" for="startDate">StartDate</label>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="startDate" v-model="dateRange.startDate">
+                        <date-input type="text" class="form-control" id="startDate" v-model="dateRange.startDate"></date-input>
                     </div>
                 </div>
                 <div class="form-group row">
                     <label class="col-sm-4 col-form-label" for="endDate">EndDate</label>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="endDate" v-model="dateRange.endDate">
+                        <date-input type="text" class="form-control" id="endDate" v-model="dateRange.endDate"></date-input>
                     </div>
                 </div>
             </div>
@@ -256,16 +256,15 @@
     data () {
       //                    :locale-data="{ daysOfWeek: [ 'Нд', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб' ] }"
       return {
-        inputDate: new Date(),
         opens: 'center',
         //minDate: '2017-08-02',
         //maxDate: '2017-11-02',
         minDate: '',
         maxDate: '',
-        singleDate: '2018-01-01',
+        singleDate: new Date(),
         dateRange: {
-          startDate: '2017-09-10',
-          endDate: '2017-09-20',
+          startDate: moment().subtract(-10, "day").toDate(),
+          endDate: moment().subtract(-5, "day").toDate(),
         },
         show_ranges: true,
         singleDatePicker: false,
