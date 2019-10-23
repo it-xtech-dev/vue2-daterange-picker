@@ -273,7 +273,7 @@
         showDropdowns: true,
         autoApply: false,
         showWeekNumbers: true,
-        linkedCalendars: true,
+        linkedCalendars: false,
       }
     },
     mounted () {

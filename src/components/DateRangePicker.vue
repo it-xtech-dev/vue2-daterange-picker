@@ -1,5 +1,7 @@
 <template>
     <div class="vue-daterange-picker">
+        <!-- add only to suppress eslint warning -->
+        <date-input v-if="false"></date-input>
         <div @click="togglePicker(null, true)">
             <!--
               Allows you to change the input which is visible before the picker opens
@@ -38,12 +40,12 @@
                             name="ranges"
                             :startDate="start"
                             :endDate="end"
-                            :ranges="ranges"
+                            :ranges="filteredRanges"
                             v-if="ranges !== false"
                     >
                         <calendar-ranges class="col-12 col-md-auto"
                                          @clickRange="clickRange"
-                                         :ranges="ranges"
+                                         :ranges="filteredRanges"
                                          :selected="{ startDate: start, endDate: end }"
                         ></calendar-ranges>
                     </slot>
@@ -267,6 +269,7 @@
               ) {
                 return true
           } else {
+            // eslint-disable-next-line
             console.warn("v-model should be Date or { startDate: Date, endDate: Date } specified value does not meet this conditions.")
             return false;
           }
@@ -526,6 +529,29 @@
         // return new Date(this.end).toLocaleDateString()
         return dayjs(new Date(this.end)).format(this.locale.format)
       },
+      filteredRanges() {
+        if (this.singleDatePicker) {
+          // filter ranges to same date only
+          var output = {};
+          var hasOptions = false;
+          for (var prop in this.ranges) {
+              if (this.ranges.hasOwnProperty(prop)) {
+                  var range = this.ranges[prop];
+                  if (range[0].isSame(range[1])) {
+                    hasOptions = true;
+                    output[prop] = range;
+                  }
+              }
+          }
+        }
+        if (hasOptions) {
+          return output
+        }
+        else
+        {
+          return false
+        }
+      },
       rangeText () {
         let range = this.startText;
         if (!this.singleDatePicker) {
@@ -565,24 +591,25 @@
         this.changeRightMonth({year: dt.getFullYear(), month: dt.getMonth()})
       },  
       'dateRange.startDate' (value) {
-        this.start = (!!value && !this.isClear) ? new Date(value) : null
-        if (this.isClear) {
-          this.start = null
-          this.end = null
-        } else {
-          this.start = new Date(this.dateRange.startDate)
-          this.end = new Date(this.dateRange.endDate)
-        }
+        this.start = value;
+        // if (this.isClear) {
+        //   this.start = null
+        //   this.end = null
+        // } else {
+        //   this.start = new Date(this.dateRange.startDate)
+        //   this.end = new Date(this.dateRange.endDate)
+        // }
       },
       'dateRange.endDate' (value) {
-        this.end = (!!value && !this.isClear) ? new Date(value) : null
-        if (this.isClear) {
-          this.start = null
-          this.end = null
-        } else {
-          this.start = new Date(this.dateRange.startDate)
-          this.end = new Date(this.dateRange.endDate)
-        }
+        this.end = value;
+        //  (!!value && !this.isClear) ? new Date(value) : null
+        // if (this.isClear) {
+        //   this.start = null
+        //   this.end = null
+        // } else {
+        //   this.start = new Date(this.dateRange.startDate)
+        //   this.end = new Date(this.dateRange.endDate)
+        // }
       }
     }
   }
