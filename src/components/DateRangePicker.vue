@@ -41,7 +41,7 @@
                             :startDate="start"
                             :endDate="end"
                             :ranges="filteredRanges"
-                            v-if="ranges !== false"
+                            v-if="filteredRanges !== false"
                     >
                         <calendar-ranges class="col-12 col-md-auto"
                                          @clickRange="clickRange"

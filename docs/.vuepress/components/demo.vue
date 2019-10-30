@@ -12,7 +12,7 @@
                         :singleDatePicker="singleDatePicker"
                         :timePicker="timePicker"
                         :timePicker24Hour="timePicker24Hour"
-                        :time-picker-increment="1"
+                        :time-picker-increment="10"
                         :showWeekNumbers="showWeekNumbers"
                         :showDropdowns="showDropdowns"
                         :autoApply="autoApply"
@@ -22,7 +22,7 @@
                         @toggle="checkOpen"
                         :linkedCalendars="linkedCalendars"
                         :dateFormat="dateFormat"
-                        :time-picker-seconds="true"
+                        :timePickeSeconds="true"
                 >
                     <div slot="input" slot-scope="picker">
                         <button class="btn btn-primary">
