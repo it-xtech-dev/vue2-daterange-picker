@@ -1,8 +1,8 @@
 <template>
     <div class="vue-daterange-picker">
-        <!-- add only to suppress eslint warning -->
+        <!-- add only to suppress eslint warning on date input component which in fact is not used inside this component but can be used outside -->
         <date-input v-if="false"></date-input>
-        <div @click="togglePicker(null, true)">
+        <div @click="togglePicker(null, true)" ref="toggler">
             <!--
               Allows you to change the input which is visible before the picker opens
 
@@ -22,113 +22,114 @@
             </slot>
         </div>
         <transition name="slide-fade" mode="out-in">
-            <div
-                    class="daterangepicker dropdown-menu ltr"
-                    :class="pickerStyles"
-                    v-if="open"
-                    v-on-clickaway="clickAway"
-            >
-                <div class="calendars row no-gutters">
-            <!--
-              Allows you to change the range
+            <div class="daterangepicker backdrop" v-if="open">
+                <div
+                        class="ltr"
+                        :class="pickerStyles"
+                        v-on-clickaway="clickAway"
+                >
+                    <div class="calendars row no-gutters">
+                <!--
+                  Allows you to change the range
 
-              @param {Date} startDate - current startDate
-              @param {Date} endDate - current endDate
-              @param {object} ranges - object with ranges
-            -->
-                    <slot
-                            name="ranges"
-                            :startDate="start"
-                            :endDate="end"
-                            :ranges="filteredRanges"
-                            v-if="filteredRanges !== false"
-                    >
-                        <calendar-ranges class="col-12 col-md-auto"
-                                         @clickRange="clickRange"
-                                         :ranges="filteredRanges"
-                                         :selected="{ startDate: start, endDate: end }"
-                        ></calendar-ranges>
-                    </slot>
+                  @param {Date} startDate - current startDate
+                  @param {Date} endDate - current endDate
+                  @param {object} ranges - object with ranges
+                -->
+                        <slot
+                                name="ranges"
+                                :startDate="start"
+                                :endDate="end"
+                                :ranges="filteredRanges"
+                                v-if="filteredRanges"
+                        >
+                            <calendar-ranges class="col-12 col-md-auto"
+                                            @clickRange="clickRange"
+                                            :ranges="filteredRanges"
+                                            :selected="{ startDate: start, endDate: end }"
+                            ></calendar-ranges>
+                        </slot>
 
-                    <div class="drp-calendar col left" :class="{single: singleDatePicker}">
-                        <div class="daterangepicker_input d-none d-sm-block" v-if="false">
-                            <input class="input-mini form-control" type="text" name="daterangepicker_start"
-                                   :value="startText"/>
-                            <i class="fa fa-calendar glyphicon glyphicon-calendar"></i>
+                        <div class="drp-calendar col left" :class="{single: singleDatePicker}">
+                            <div class="daterangepicker_input d-none d-sm-block" v-if="false">
+                                <input class="input-mini form-control" type="text" name="daterangepicker_start"
+                                      :value="startText"/>
+                                <i class="fa fa-calendar glyphicon glyphicon-calendar"></i>
+                            </div>
+                            <div class="calendar-table">
+                                <calendar :monthDisplayed="primaryPickerDateDisplayed"
+                                          :locale-data="locale"
+                                          :start="start" :end="end"
+                                          :minDate="min" :maxDate="max"
+                                          :showDropdowns="showDropdowns"
+
+                                          @changeMonth="changeLeftMonth"
+                                          :dateFormat="dateFormatFn"
+
+                                          @dateClick="dateClick" @hoverDate="hoverDate"
+                                          :showWeekNumbers="showWeekNumbers"
+                                          context="primary"
+                                ></calendar>
+                            </div>
+                            <calendar-time v-if="timePicker"
+                                          @update="onUpdateStartTime"
+                                          :miniuteIncrement="timePickerIncrement"
+                                          :hour24="timePicker24Hour"
+                                          :secondPicker="timePickerSeconds"
+                                          :currentTime="start"
+                            />
                         </div>
-                        <div class="calendar-table">
-                            <calendar :monthDisplayed="primaryPickerDateDisplayed"
-                                      :locale-data="locale"
-                                      :start="start" :end="end"
-                                      :minDate="min" :maxDate="max"
-                                      :show-dropdowns="showDropdowns"
 
-                                      @change-month="changeLeftMonth"
-                                      :date-format="dateFormatFn"
+                        <div class="drp-calendar col right" v-if="!singleDatePicker">
+                            <div class="daterangepicker_input" v-if="false">
+                                <input class="input-mini form-control" type="text" name="daterangepicker_end"
+                                      :value="endText"/>
+                                <i class="fa fa-calendar glyphicon glyphicon-calendar"></i>
+                            </div>
+                            <div class="calendar-table">
+                                <calendar :monthDisplayed="seconaryPickerDateDisplayed"
+                                          :localeData="locale"
+                                          :start="start" :end="end"
+                                          :minDate="min" :maxDate="max"
+                                          :showDropdowns="showDropdowns"
 
-                                      @dateClick="dateClick" @hoverDate="hoverDate"
-                                      :showWeekNumbers="showWeekNumbers"
-                                      context="primary"
-                            ></calendar>
+                                          @changeMonth="changeRightMonth"
+                                          :dateFormat="dateFormatFn"
+
+                                          @dateClick="dateClick" @hoverDate="hoverDate"
+                                          :showWeekNumbers="showWeekNumbers"
+
+                                          context="secondary"
+                                ></calendar>
+                            </div>
+                            <calendar-time v-if="timePicker"
+                                          @update="onUpdateEndTime"
+                                          :miniuteIncrement="timePickerIncrement"
+                                          :hour24="timePicker24Hour"
+                                          :secondPicker="timePickerSeconds"
+                                          :currentTime="end"
+                            />
                         </div>
-                        <calendar-time v-if="timePicker"
-                                       @update="onUpdateStartTime"
-                                       :miniute-increment="timePickerIncrement"
-                                       :hour24="timePicker24Hour"
-                                       :second-picker="timePickerSeconds"
-                                       :current-time="start"
-                        />
                     </div>
 
-                    <div class="drp-calendar col right" v-if="!singleDatePicker">
-                        <div class="daterangepicker_input" v-if="false">
-                            <input class="input-mini form-control" type="text" name="daterangepicker_end"
-                                   :value="endText"/>
-                            <i class="fa fa-calendar glyphicon glyphicon-calendar"></i>
-                        </div>
-                        <div class="calendar-table">
-                            <calendar :monthDisplayed="seconaryPickerDateDisplayed"
-                                      :locale-data="locale"
-                                      :start="start" :end="end"
-                                      :minDate="min" :maxDate="max"
-                                      :show-dropdowns="showDropdowns"
-
-                                      @change-month="changeRightMonth"
-                                      :date-format="dateFormatFn"
-
-                                      @dateClick="dateClick" @hoverDate="hoverDate"
-                                      :showWeekNumbers="showWeekNumbers"
-
-                                      context="secondary"
-                            ></calendar>
-                        </div>
-                        <calendar-time v-if="timePicker"
-                                       @update="onUpdateEndTime"
-                                       :miniute-increment="timePickerIncrement"
-                                       :hour24="timePicker24Hour"
-                                       :second-picker="timePickerSeconds"
-                                       :current-time="end"
-                        />
+                    <div class="drp-buttons" v-if="!autoApply">
+                        <span class="drp-selected">{{rangeText}}</span>
+                        <button
+                                class="cancelBtn btn btn-sm btn-default"
+                                type="button"
+                                @click="clickAway"
+                        >{{locale.cancelLabel}}
+                        </button>
+                        <button
+                                class="applyBtn btn btn-sm btn-success"
+                                :disabled="in_selection"
+                                type="button"
+                                @click="clickedApply"
+                        >{{locale.applyLabel}}
+                        </button>
                     </div>
-                </div>
 
-                <div class="drp-buttons" v-if="!autoApply">
-                    <span class="drp-selected">{{rangeText}}</span>
-                    <button
-                            class="cancelBtn btn btn-sm btn-default"
-                            type="button"
-                            @click="clickAway"
-                    >{{locale.cancelLabel}}
-                    </button>
-                    <button
-                            class="applyBtn btn btn-sm btn-success"
-                            :disabled="in_selection"
-                            type="button"
-                            @click="clickedApply"
-                    >{{locale.applyLabel}}
-                    </button>
                 </div>
-
             </div>
         </transition>
     </div>
@@ -184,13 +185,6 @@
         default: false,
       },
       /**
-       * Each calendar has separate navigation when this is false
-       */
-      linkedCalendars: {
-        type: Boolean,
-        default: true,
-      },
-      /**
        * Allows you to select only one date (instead of range). This will hide the ranges with different start/end
        */
       singleDatePicker: {
@@ -216,7 +210,7 @@
        */
       timePickerIncrement: {
         type: Number,
-        default: 5,
+        default: 1,
       },
       /**
        * Use 24h format for the time
@@ -281,43 +275,43 @@
         }        
       },
       /**
-       * You can set this to false in order to hide the ranges selection. Otherwise it is an object with key/value. See below
+       * Gets or sets predefined calendar ranges. Object with key/value array for predefined ranges. Passing null or empty object will hide ranges section.
        * @default *see below
        */
       ranges: {
-        type: [Object, Boolean],
+        type: Object,
         default () {
           return {
-            'Today': [dayjs(), dayjs()],
-            'Yesterday': [dayjs().subtract(1, 'days'), dayjs().subtract(1, 'days')],
-            'This month': [dayjs().startOf('month'), dayjs().endOf('month')],
-            'This year': [dayjs().startOf('year'), dayjs().endOf('year')],
-            'Last week': [dayjs().subtract(1, 'week').startOf('week'), dayjs().subtract(1, 'week').endOf('week')],
-            'Last month': [dayjs().subtract(1, 'month').startOf('month'), dayjs().subtract(1, 'month').endOf('month')],
+            'Today': [dayjs().startOf('day'), dayjs().endOf('day')],
+            'Yesterday': [dayjs().subtract(1, 'days').startOf('day'), dayjs().subtract(1, 'days').endOf('day')],
+            'This month': [dayjs().startOf('month').startOf('day'), dayjs().endOf('month').endOf('day')],
+            'This year': [dayjs().startOf('year').startOf('day'), dayjs().endOf('year').endOf('day')],
+            'Last week': [dayjs().subtract(1, 'week').startOf('week').startOf('day'), dayjs().subtract(1, 'week').endOf('week').endOf('day')],
+            'Last month': [dayjs().subtract(1, 'month').startOf('month').startOf('day'), dayjs().subtract(1, 'month').endOf('month').endOf('day')],
           }
         }
       },
       /**
+       * Gets or sets value determining whether predefined candar ranges should be displayed.
+       */
+      showRanges: {
+        type: Boolean,
+        default: true
+      },
+      /**
        * which way the picker opens - "center", "left" or "right"
        */
-      opens: {
-        type: String,
-        default: 'center'
-      },
+      // opens: {
+      //   type: String,
+      //   default: 'center'
+      // },
       /**
        function(classes, date) - special prop type function which accepts 2 params:
         "classes" - the classes that the component's logic has defined,
         "date" - tha date currently processed.
          You should return Vue class object which should be applied to the date rendered.
        */
-      dateFormat: Function,
-      /**
-       * *WIP*
-       */
-      alwaysShowCalendars: {
-        type: Boolean,
-        default: true
-      }
+      dateFormat: Function
     },
     data () {
       let data = {
@@ -367,7 +361,7 @@
       changeLeftMonth (value) {
         let newDate = new Date(value.year, value.month, 1);
         this.primaryPickerDateDisplayed = newDate
-        if (this.linkedCalendars || (yearMonth(this.primaryPickerDateDisplayed) >= yearMonth(this.seconaryPickerDateDisplayed))) {
+        if ((yearMonth(this.primaryPickerDateDisplayed) >= yearMonth(this.seconaryPickerDateDisplayed))) {
           this.seconaryPickerDateDisplayed = validateDateRange(nextMonth(newDate), this.minDate, this.maxDate);
           if (yearMonth(this.primaryPickerDateDisplayed) === yearMonth(this.seconaryPickerDateDisplayed)) {
             this.primaryPickerDateDisplayed = validateDateRange(prevMonth(this.primaryPickerDateDisplayed), this.minDate, this.maxDate)
@@ -377,7 +371,7 @@
       changeRightMonth (value) {
         let newDate = new Date(value.year, value.month, 1);
         this.seconaryPickerDateDisplayed = newDate
-        if (this.linkedCalendars || (yearMonth(this.seconaryPickerDateDisplayed) <= yearMonth(this.primaryPickerDateDisplayed))) {
+        if ((yearMonth(this.seconaryPickerDateDisplayed) <= yearMonth(this.primaryPickerDateDisplayed))) {
           this.primaryPickerDateDisplayed = validateDateRange(prevMonth(newDate), this.minDate, this.maxDate);
           if (yearMonth(this.primaryPickerDateDisplayed) === yearMonth(this.seconaryPickerDateDisplayed)) {
             this.seconaryPickerDateDisplayed = validateDateRange(nextMonth(this.seconaryPickerDateDisplayed), this.minDate, this.maxDate)
@@ -530,26 +524,31 @@
         return dayjs(new Date(this.end)).format(this.locale.format)
       },
       filteredRanges() {
+        if (this.showRanges === false) return null;
+
+        var hasOptions = false;
+        var output = {};
         if (this.singleDatePicker) {
           // filter ranges to same date only
-          var output = {};
-          var hasOptions = false;
           for (var prop in this.ranges) {
               if (this.ranges.hasOwnProperty(prop)) {
                   var range = this.ranges[prop];
-                  if (range[0].isSame(range[1])) {
+                  if (range[0].isSame(range[1], 'day')) {
                     hasOptions = true;
                     output[prop] = range;
                   }
               }
           }
+        } else if (this.ranges) {
+          output = this.ranges
+          hasOptions = Object.keys(this.ranges).length > 0
         }
         if (hasOptions) {
           return output
         }
         else
         {
-          return false
+          return null;
         }
       },
       rangeText () {
@@ -568,13 +567,9 @@
       pickerStyles () {
         return {
           'show-calendar': this.open,
-          'show-ranges': !!this.ranges,
+          'show-ranges': this.filteredRanges != null,
           'show-weeknumbers': this.showWeekNumbers,
-          single: this.singleDatePicker,
-          opensright: this.opens === 'right',
-          opensleft: this.opens === 'left',
-          openscenter: this.opens === 'center',
-          linked: this.linkedCalendars
+          single: this.singleDatePicker
         }
       },
       isClear () {
@@ -624,118 +619,12 @@
 </style>
 
 <style lang="scss" scoped>
-    $week-width: 682px - 628px;
-
     .reportrange-text {
         background: #fff;
         cursor: pointer;
         padding: 5px 10px;
         border: 1px solid #ccc;
         width: 100%;
-    }
-
-    .daterangepicker {
-        flex-direction: column;
-        display: flex;
-        width: auto;
-
-        @media screen and (max-width: 768px) {
-            &.show-ranges {
-                .drp-calendar.left {
-                    border-left: 0px;
-                }
-
-                .ranges {
-                    border-bottom: 1px solid #ddd;
-
-                    ::v-deep ul {
-                        display: flex;
-                        flex-wrap: wrap;
-                        width: auto;
-                    }
-                }
-            }
-        }
-
-        @media screen and (min-width: 540px) {
-            min-width: 486px;
-            &.show-weeknumbers {
-                min-width: 490px + $week-width;
-            }
-
-        }
-
-        @media screen and (min-width: 768px) {
-            &.show-ranges {
-                min-width: 628px;
-
-                &.show-weeknumbers {
-                    min-width: 628px + $week-width;
-                }
-            }
-        }
-
-        &.single {
-            @media screen and (max-width: 340px) {
-                min-width: 250px;
-
-                &.show-weeknumbers {
-                    min-width: 250px + $week-width;
-                }
-            }
-
-            @media screen and (min-width: 339px) {
-                min-width: auto;
-                &.show-ranges {
-                    min-width: 328px;
-
-                    &.show-weeknumbers {
-                        min-width: 328px + $week-width;
-                    }
-
-                    .drp-calendar.left {
-                        border-left: 1px solid #ddd;
-                    }
-
-                    .ranges {
-                        width: auto;
-                        max-width: none;
-                        flex-basis: auto;
-                        border-bottom: 0;
-
-                        ::v-deep ul {
-                            display: block;
-                            width: 100%;
-                        }
-                    }
-                }
-            }
-        }
-
-        &.show-calendar {
-            display: block;
-        }
-    }
-
-    .daterangepicker {
-        &.opensleft {
-            top: 35px;
-            right: 10px;
-            left: auto;
-        }
-
-        &.openscenter {
-            top: 35px;
-            right: auto;
-            left: 50%;
-            transform: translate(-50%, 0);
-        }
-
-        &.opensright {
-            top: 35px;
-            left: 10px;
-            right: auto;
-        }
     }
 
     /* Enter and leave animations can use different */

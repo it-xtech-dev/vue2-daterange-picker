@@ -12,15 +12,14 @@
                         :singleDatePicker="singleDatePicker"
                         :timePicker="timePicker"
                         :timePicker24Hour="timePicker24Hour"
-                        :time-picker-increment="10"
+                        :time-picker-increment="1"
                         :showWeekNumbers="showWeekNumbers"
                         :showDropdowns="showDropdowns"
                         :autoApply="autoApply"
+                        :showRanges="show_ranges ? undefined : false"
                         v-model="dateRange"
-                        :ranges="show_ranges ? undefined : false"
                         @update="updateValues"
                         @toggle="checkOpen"
-                        :linkedCalendars="linkedCalendars"
                         :dateFormat="dateFormat"
                         :timePickeSeconds="true"
                 >
@@ -49,17 +48,16 @@
                         :singleDatePicker="true"
                         :timePicker="timePicker"
                         :timePicker24Hour="timePicker24Hour"
-                        :time-picker-increment="1"
+                        :timePickerIncrement="1"
                         :showWeekNumbers="showWeekNumbers"
                         :showDropdowns="showDropdowns"
                         :autoApply="autoApply"
                         v-model="singleDate"
-                        :ranges="show_ranges ? undefined : false"
+                        :showRanges="show_ranges ? undefined : false"
                         @update="updateValues"
                         @toggle="checkOpen"
-                        :linkedCalendars="linkedCalendars"
                         :dateFormat="dateFormat"
-                        :time-picker-seconds="true"
+                        :timePickerSeconds="true"
                 >
                     <div slot="input" slot-scope="picker">
                         <button class="btn btn-primary">
@@ -118,28 +116,6 @@
                 </div>
             </div>
         </div>
-
-        <div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="options" id="option1" value="left"
-                       v-model="opens">
-                <label class="form-check-label">left</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="options" id="option2" value="center"
-                       v-model="opens">
-                <label class="form-check-label">center</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="options" id="option3" value="right"
-                       v-model="opens">
-                <label class="form-check-label">right</label>
-            </div>
-            <small class="form-text text-muted">Whether the picker appears aligned to the left, to the right, or
-                centered relative to the HTML element it's attached to
-            </small>
-        </div>
-
         <div>
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="singleDatePicker"
@@ -205,15 +181,6 @@
                     with key/value.
                 </small>
             </div>
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="linkedCalendars" v-model="linkedCalendars">
-                <label class="form-check-label" for="linkedCalendars">
-                    linkedCalendars
-                </label>
-                <small class="form-text text-muted">
-                    Each calendar has separate navigation
-                </small>
-            </div>
         </div>
 
         <div class="pt-5">
@@ -273,7 +240,6 @@
         showDropdowns: true,
         autoApply: false,
         showWeekNumbers: true,
-        linkedCalendars: false,
       }
     },
     mounted () {

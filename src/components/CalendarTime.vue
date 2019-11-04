@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import dayjs from 'dayjs';
   export default {
     filters: {
       formatNumber: (value) => {
@@ -50,14 +51,17 @@
         }
       }
     },
+    created() {
+      this.setTime();
+    },
     data() {
-      let current = this.currentTime ? this.currentTime : new Date()
-      let hours = current.getHours();
+      //let current = this.currentTime ? this.currentTime : new Date()
+      //let hours = current.getHours();
       return {
-        hour: this.hour24 ? hours : hours % 12 || 12,
-        minute: current.getMinutes() - (current.getMinutes() % this.miniuteIncrement),
-        second: current.getSeconds(),
-        ampm: hours < 12 ? 'AM' : 'PM',
+        hour: 0,
+        minute: 0,
+        second: 0,
+        ampm: null,
       };
     },
     computed: {
@@ -79,6 +83,11 @@
       },
     },
     watch: {
+      currentTime(newValue,oldValue) {
+        if (!dayjs(oldValue).isSame(newValue)) {
+          this.setTime();
+        }
+      },
       hour () {
         this.onChange();
       },
@@ -93,6 +102,15 @@
       },
     },
     methods: {
+      setTime() {
+        let current = this.currentTime ? this.currentTime : new Date()
+        let hours = current.getHours();
+
+        this.hour = this.hour24 ? hours : hours % 12 || 12;
+        this.minute = current.getMinutes() - (current.getMinutes() % this.miniuteIncrement);
+        this.second = current.getSeconds();
+        this.ampm = hours < 12 ? 'AM' : 'PM';
+      },
       getHour() {
         if (this.hour24) {
           return this.hour;

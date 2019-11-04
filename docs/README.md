@@ -14,3 +14,36 @@ check: https://github.com/Innologica/vue2-daterange-picker
 ## Example
 
 <demo></demo>
+
+## Props
+<component-props component="DateRangePicker"/>
+* sample locale data
+```JS
+{
+    direction: 'ltr',
+    format: moment.localeData().longDateFormat('L'),
+    separator: ' - ',
+    applyLabel: 'Apply',
+    cancelLabel: 'Cancel',
+    weekLabel: 'W',
+    customRangeLabel: 'Custom Range',
+    daysOfWeek: moment.weekdaysMin(),
+    monthNames: moment.monthsShort(),
+    firstDay: moment.localeData().firstDayOfWeek()
+}
+```
+* default ranges object (set to false to hide ranges)
+```JS
+{
+    'Today': [moment(), moment()],
+    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+    'This month': [moment().startOf('month'), moment().endOf('month')],
+    'This year': [moment().startOf('year'), moment().endOf('year')],
+    'Last week': [moment().subtract(1, 'week').startOf('week'), moment().subtract(1, 'week').endOf('week')],
+    'Last month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+}
+```
+## Events
+<component-events component="DateRangePicker"/>
+## Slots
+<component-slots component="DateRangePicker"/>
