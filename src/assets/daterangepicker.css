@@ -1,7 +1,4 @@
 .daterangepicker > div {
-  /* position: absolute; */
-  /* top: 100px; */
-  /* left: 20px; */
   color: inherit;
   background-color: #fff;
   border-radius: 4px;
@@ -17,7 +14,7 @@
 
 .daterangepicker.backdrop {
   position: fixed;
-  z-index: 100;
+  z-index: 1100;
   left: 0;
   top: 0;
   bottom: 0;
