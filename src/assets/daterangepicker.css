@@ -180,24 +180,27 @@
   text-decoration: line-through;
 }
 
-.daterangepicker select.monthselect, .daterangepicker select.yearselect {
+.daterangepicker select.monthselect, 
+.daterangepicker select.yearselect {
   font-size: 12px;
-  padding: 1px;
+  padding: 0 5px;
   height: auto;
   margin: 0;
   cursor: default;
+  border: 1px solid #EAEAEA;
 }
 
 .daterangepicker select.monthselect {
-  margin-right: 2%;
-  width: 56%;
+  width: 50%;
 }
-
 .daterangepicker select.yearselect {
-  width: 40%;
+  width: 50%;
 }
 
-.daterangepicker select.hourselect, .daterangepicker select.minuteselect, .daterangepicker select.secondselect, .daterangepicker select.ampmselect {
+.daterangepicker select.hourselect, 
+.daterangepicker select.minuteselect, 
+.daterangepicker select.secondselect, 
+.daterangepicker select.ampmselect {
   width: 60px;
   margin: 0 auto;
   background: #eee;

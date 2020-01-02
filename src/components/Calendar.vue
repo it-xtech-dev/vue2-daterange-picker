@@ -9,10 +9,12 @@
                     class="month"
             >
                 <div class="row mx-1">
-                    <select v-model="month" class="monthselect col">
+                    <select v-model="month" class="monthselect">
                         <option v-for="(m) in months" :key="m.value" :value="m.value">{{m.label}}</option>
                     </select>
-                    <input type="number" v-model="year" class="yearselect col" />
+                    <select v-model="year" class="yearselect">
+                      <option v-for="yearNo in yearList" :key="yearNo" :value="yearNo">{{ yearNo }}</option>
+                    </select>
                 </div>
             </th>
             <th v-else colspan="5" class="month">{{monthName}} {{year}}</th>
@@ -94,7 +96,7 @@
         let year_month = yearMonth(this.currentMonthDisplayed)
         this.currentMonthDisplayed = validateDateRange(date, this.minDate, this.maxDate)
         if(emit && year_month !== yearMonth(this.currentMonthDisplayed)) {
-          this.$emit('change-month', {
+          this.$emit('monthChanged', {
             month: this.currentMonthDisplayed.getMonth(),
             year: this.currentMonthDisplayed.getFullYear(),
           })
@@ -121,12 +123,21 @@
         }
         return this.dateFormat ? this.dateFormat(classes, date) : classes
 
+      },
+      getYearList () {
+        var result = [];
+        var year = this.year;
+        for (var i = 0; i < 20; i++) {
+          result.push(year - 10 + i);
+        }
+
+        return result;
       }
     },
     computed: {
       monthName () {
         return this.locale.monthNames[this.currentMonthDisplayed.getMonth()]
-      },
+      },      
       year: {
         get () {
           return this.currentMonthDisplayed.getFullYear()
@@ -134,11 +145,14 @@
         set (value) {
           let newDate = validateDateRange(new Date(value, this.month, 1), this.minDate, this.maxDate)
 
-          this.$emit('change-month', {
+          this.$emit('monthChanged', {
             month: newDate.getMonth(),
             year: newDate.getFullYear(),
           });
         }
+      },
+      yearList() {
+        return this.getYearList();
       },
       month: {
         get () {
@@ -147,7 +161,7 @@
         set (value) {
           let newDate = validateDateRange(new Date(this.year, value, 1), this.minDate, this.maxDate)
 
-          this.$emit('change-month', {
+          this.$emit('monthChanged', {
             month: newDate.getMonth(),
             year: newDate.getFullYear(),
           });

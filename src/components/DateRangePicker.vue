@@ -63,10 +63,11 @@
                                           :minDate="min" :maxDate="max"
                                           :showDropdowns="showDropdowns"
 
-                                          @changeMonth="changeLeftMonth"
+                                          @monthChanged="changeLeftMonth"
                                           :dateFormat="dateFormatFn"
 
-                                          @dateClick="dateClick" @hoverDate="hoverDate"
+                                          @dateClick="dateClick" 
+                                          @hoverDate="hoverDate"
                                           :showWeekNumbers="showWeekNumbers"
                                           context="primary"
                                 ></calendar>
@@ -93,10 +94,11 @@
                                           :minDate="min" :maxDate="max"
                                           :showDropdowns="showDropdowns"
 
-                                          @changeMonth="changeRightMonth"
+                                          @monthChanged="changeRightMonth"
                                           :dateFormat="dateFormatFn"
 
-                                          @dateClick="dateClick" @hoverDate="hoverDate"
+                                          @dateClick="dateClick" 
+                                          @hoverDate="hoverDate"
                                           :showWeekNumbers="showWeekNumbers"
 
                                           context="secondary"

@@ -1,6 +1,6 @@
 {
   "name": "it-xtech-dev.vue2-daterange-picker",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "Vue2 date range picker forked from https://github.com/Innologica/vue2-daterange-picker",
   "author": "Paweł Kołodziej (xtech.dev@gmail.com)",
   "main": "dist/vue2-daterange-picker.umd.min.js",
