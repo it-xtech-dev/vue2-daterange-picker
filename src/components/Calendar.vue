@@ -4,9 +4,9 @@
         <tr>
             <th class="prev available" @click="prevMonth"><span/></th>
             <th
-                    v-if="showDropdowns"
-                    :colspan="showWeekNumbers ? 6 : 5"
-                    class="month"
+              v-if="showDropdowns"
+              :colspan="showWeekNumbers ? 6 : 5"
+              class="month"
             >
                 <div class="row mx-1">
                     <select v-model="month" class="monthselect">
@@ -36,8 +36,8 @@
             <slot name="date-slot" v-for="(date, idx) in dateRow">
                 <td
                         :class="dayClass(date)"
-                        @click="$emit('dateClick', date, context)"
-                        @mouseover="$emit('hoverDate', date, context)"
+                        @click="$emit('date-click', date, context)"
+                        @mouseover="$emit('hover-date', date, context)"
                         :key="idx"
                 >
                     {{date | dateNum}}
@@ -96,7 +96,7 @@
         let year_month = yearMonth(this.currentMonthDisplayed)
         this.currentMonthDisplayed = validateDateRange(date, this.minDate, this.maxDate)
         if(emit && year_month !== yearMonth(this.currentMonthDisplayed)) {
-          this.$emit('monthChanged', {
+          this.$emit('month-changed', {
             month: this.currentMonthDisplayed.getMonth(),
             year: this.currentMonthDisplayed.getFullYear(),
           })

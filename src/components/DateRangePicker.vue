@@ -63,11 +63,11 @@
                                           :minDate="min" :maxDate="max"
                                           :showDropdowns="showDropdowns"
 
-                                          @monthChanged="changeLeftMonth"
+                                          @month-changed="changeLeftMonth"
                                           :dateFormat="dateFormatFn"
 
-                                          @dateClick="dateClick" 
-                                          @hoverDate="hoverDate"
+                                          @date-click="dateClick" 
+                                          @hover-date="hoverDate"
                                           :showWeekNumbers="showWeekNumbers"
                                           context="primary"
                                 ></calendar>
