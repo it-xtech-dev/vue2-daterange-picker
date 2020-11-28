@@ -60,6 +60,7 @@
 .daterangepicker .drp-calendar {
   display: none;
   max-width: 270px;
+  flex-basis: 270px;
 }
 
 .daterangepicker .drp-calendar.left {
