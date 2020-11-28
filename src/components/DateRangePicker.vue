@@ -94,11 +94,11 @@
                                           :minDate="min" :maxDate="max"
                                           :showDropdowns="showDropdowns"
 
-                                          @monthChanged="changeRightMonth"
+                                          @month-changed="changeRightMonth"
                                           :dateFormat="dateFormatFn"
 
-                                          @dateClick="dateClick" 
-                                          @hoverDate="hoverDate"
+                                          @date-click="dateClick" 
+                                          @hover-date="hoverDate"
                                           :showWeekNumbers="showWeekNumbers"
 
                                           context="secondary"

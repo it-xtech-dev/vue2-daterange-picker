@@ -145,7 +145,7 @@
         set (value) {
           let newDate = validateDateRange(new Date(value, this.month, 1), this.minDate, this.maxDate)
 
-          this.$emit('monthChanged', {
+          this.$emit('month-changed', {
             month: newDate.getMonth(),
             year: newDate.getFullYear(),
           });
@@ -161,7 +161,7 @@
         set (value) {
           let newDate = validateDateRange(new Date(this.year, value, 1), this.minDate, this.maxDate)
 
-          this.$emit('monthChanged', {
+          this.$emit('month-changed', {
             month: newDate.getMonth(),
             year: newDate.getFullYear(),
           });
