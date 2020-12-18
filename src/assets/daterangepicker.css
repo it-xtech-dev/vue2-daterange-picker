@@ -211,6 +211,10 @@
   font-weight: 300;
 }
 
+.daterangepicker .calendars {
+  flex-wrap: nowrap;
+}
+
 .daterangepicker .calendar-time {
   text-align: center;
   margin: 4px auto 0 auto;
@@ -309,6 +313,9 @@
 @media (max-width: 580px) {
   .daterangepicker > .show-calendar {
     width: 278px;
+  }
+  .daterangepicker .calendars {
+    flex-direction: column;
   }
   .daterangepicker .drp-selected {
     padding: 8px 0;

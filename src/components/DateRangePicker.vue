@@ -1,5 +1,6 @@
 <template>
     <div class="vue-daterange-picker">
+        <span :component-version="version"></span>
         <!-- add only to suppress eslint warning on date input component which in fact is not used inside this component but can be used outside -->
         <date-input v-if="false"></date-input>
         <div @click="togglePicker(null, true)" ref="toggler">
@@ -146,6 +147,7 @@
   import DateInputImport from './DateInput'
   import {localeData, nextMonth, prevMonth, validateDateRange, yearMonth} from './util'
   import {mixin as clickaway} from 'vue-clickaway'
+  import { version } from '../../package.json'
 
   // initialize default locale
   dayjs.locale('en-gb')
@@ -317,7 +319,8 @@
     },
     data () {
       let data = {
-        locale: localeData(this.localeData)
+        locale: localeData(this.localeData),
+        version
       }
 
       var initialDates = this.getBindedDates();
