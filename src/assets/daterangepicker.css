@@ -308,6 +308,10 @@
     flex-wrap: wrap;
     width: auto;
   }
+
+  .daterangepicker .calendars {
+    flex-wrap: wrap;
+  }  
 }
 
 @media (max-width: 580px) {

@@ -232,7 +232,9 @@
         }
         return monthsData;
       },
-      locale () { return localeData(this.localeData) }
+      locale () {
+        return localeData(this.localeData) 
+      }
     },
     watch: {
       monthDisplayed (value) {

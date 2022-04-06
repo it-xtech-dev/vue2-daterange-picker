@@ -34,7 +34,8 @@ const validateDateRange = (newDate, min, max) => {
 }
 
 const localeData = (options) => {
-    let current_locale_res = dayjs().$locale();
+    // clone current locale
+    let current_locale_res = JSON.parse(JSON.stringify(dayjs().$locale()));
     let default_locale = {
         direction: 'ltr',
         format: current_locale_res.formats.L,

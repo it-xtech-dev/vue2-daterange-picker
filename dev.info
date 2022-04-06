@@ -1,0 +1,16 @@
+********
+* BASICS
+********
+
+1. This project provides date time picker for primary usage in ImPlatform.ReportServer. 
+2. This project is forked from: https://github.com/Innologica/vue2-daterange-picker).
+
+***********
+Development
+***********
+
+1. Working directory: cd .\
+2. Project initialization: npm install
+2. Running dev mode: npm run docs:dev (navigate to url specified on terminal window)
+3. Building for production: npm run lib
+4. Building npm package: npm pack
